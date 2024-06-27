@@ -9,7 +9,7 @@ const app = express();
 const port = process.env.API_PORT || 3001;
 const mongoCollection = process.env.MONGO_COLLECTION;
 const mongoUri = process.env.MONGO_URI;
-const frontendUrl = process.env.FRONTEND_URL;
+const frontendUrl = process.env.FRONTEND_URL
 
 // Connect to MongoDB
 mongoose
