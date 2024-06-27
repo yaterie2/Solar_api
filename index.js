@@ -69,6 +69,12 @@ const bodySchema = new mongoose.Schema({
 
 const Body = mongoose.model(mongoCollection, bodySchema, mongoCollection);
 
+console.log("connecting to " + mongoUri);
+mongoose
+  .connect(mongoUri)
+  .then(() => console.log("MongoDB connection successful"))
+  .catch((err) => console.error("MongoDB connection error:", err));
+
 // CORS options
 const corsOptions = {
   origin: [
@@ -78,6 +84,9 @@ const corsOptions = {
   methods: ["GET", "POST"],
   allowedHeaders: ["Content-Type", "Authorization"],
 };
+
+console.log("Frontend URL:", frontendUrl);
+console.log("CORS Options: ", corsOptions);
 
 // Use CORS middleware
 app.use(cors(corsOptions));
