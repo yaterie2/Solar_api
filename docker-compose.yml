@@ -21,13 +21,16 @@ services:
     networks:
       - proxy
 
-  backend:
+  api:
     image: ghcr.io/yaterie2/solar_api:latest
     environment:
       - API_PORT=${API_PORT}
       - FRONTEND_URL=https://${FRONTEND_SUBDOMAIN}.${DOMAIN}
       - MONGO_COLLECTION=${MONGO_COLLECTION}
-      - MONGO_URI=mongodb://${MONGO_INITDB_ROOT_USERNAME}:${MONGO_INITDB_ROOT_PASSWORD}@starbugs_mongo:27017/${MONGO_DB}?authSource=admin
+      - MONGO_URI=mongodb://yannick:Etoiles.mmz@localhost:27017/solarinfo?authSource=admin
+      - MONGO_DB=${MONGO_DB}
+    depends_on:
+      - mongodb
     deploy:
       replicas: 1
       update_config:
@@ -36,19 +39,20 @@ services:
         order: start-first
       labels:
         - "traefik.enable=true"
+        - "traefik.port=3001"
         - "traefik.docker.network=proxy"
-        - "traefik.http.routers.${BACKEND_SUBDOMAIN}.rule=Host(`${BACKEND_SUBDOMAIN}.${DOMAIN}`)"
+        - "traefik.http.routers.${BACKEND_SUBDOMAIN}.rule=Host(`solarapp-api.yannick-schwab.de`)"
         - "traefik.http.routers.${BACKEND_SUBDOMAIN}.entrypoints=https"
         - "traefik.http.routers.${BACKEND_SUBDOMAIN}.tls=true"
         - "traefik.http.routers.${BACKEND_SUBDOMAIN}.tls.certresolver=cf"
-        - "traefik.http.services.${BACKEND_SUBDOMAIN}.loadbalancer.server.port=${API_PORT}"
+        - "traefik.http.services.${BACKEND_SUBDOMAIN}.loadbalancer.server.port=3001"
         - "traefik.http.services.${BACKEND_SUBDOMAIN}.loadbalancer.server.scheme=http"
 
     networks:
       - proxy
-      - starbugs_network
+      - solar
 
-  mongo:
+  mongodb:
     image: mongo:7
     environment:
       - MONGO_INITDB_ROOT_USERNAME=${MONGO_INITDB_ROOT_USERNAME}
@@ -60,17 +64,15 @@ services:
       update_config:
         delay: 10s
         failure_action: rollback
-        order: start-first
     ports:
-      - 27027:27017
+      - 27017:27017
     networks:
-      - proxy
-      - starbugs_network
+      - solar
 
 networks:
   proxy:
     external: true
   starbugs_network:
-    
+
 volumes:
   mongo_data:

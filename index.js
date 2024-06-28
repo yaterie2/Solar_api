@@ -66,7 +66,7 @@ const bodySchema = new mongoose.Schema({
   rel: String,
 });
 
-const Body = mongoose.model(mongoCollection, bodySchema, mongoCollection);
+const Body = mongoose.model("Body", bodySchema);
 
 console.log("connecting to " + mongoUri);
 mongoose
@@ -95,7 +95,6 @@ app.get("/api/allbodies", async (req, res) => {
     res.status(500).json({ error: "Error fetching bodies" });
   }
 });
-
 
 // Route to fetch a body by id
 app.get("/api/body/:id", async (req, res) => {
