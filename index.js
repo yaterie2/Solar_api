@@ -82,6 +82,7 @@ const corsOptions = {
 console.log("Frontend URL:", frontendUrl);
 console.log("CORS Options: ", corsOptions);
 
+
 // Use CORS middleware
 app.use(cors(corsOptions));
 
