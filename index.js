@@ -96,6 +96,7 @@ app.get("/api/allbodies", async (req, res) => {
   }
 });
 
+
 // Route to fetch a body by id
 app.get("/api/body/:id", async (req, res) => {
   const { id } = req.params;
