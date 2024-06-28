@@ -4,15 +4,18 @@ const express = require("express");
 const mongoose = require("mongoose");
 const cors = require("cors");
 
-
 const app = express();
 const port = process.env.API_PORT || 3001;
 const mongoCollection = process.env.MONGO_COLLECTION;
 const mongoUri = process.env.MONGO_URI;
-const frontendUrl = process.env.FRONTEND_URL
+const frontendUrl = process.env.FRONTEND_URL;
 
 // Connect to MongoDB
-mongoose.connect(mongoUri)
+console.log("connecting to " + mongoUri);
+mongoose
+  .connect(mongoUri, {
+    // Any additional options you need
+  })
   .then(() => console.log("MongoDB connected"))
   .catch((err) => console.error("MongoDB connection error:", err));
 
@@ -65,12 +68,6 @@ const bodySchema = new mongoose.Schema({
 });
 
 const Body = mongoose.model(mongoCollection, bodySchema, mongoCollection);
-
-console.log("connecting to " + mongoUri);
-mongoose
-  .connect(mongoUri)
-  .then(() => console.log("MongoDB connection successful"))
-  .catch((err) => console.error("MongoDB connection error:", err));
 
 // CORS options
 const corsOptions = {
