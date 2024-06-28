@@ -8,17 +8,15 @@ const app = express();
 const port = process.env.API_PORT || 3001;
 const mongoCollection = process.env.MONGO_COLLECTION;
 const mongoUri = process.env.MONGO_URI;
-const frontendUrl = process.env.FRONTEND_URL;
 
 // Connect to MongoDB
-console.log("connecting to " + mongoUri);
 mongoose
   .connect(mongoUri, {
-    // Any additional options you need
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
   })
   .then(() => console.log("MongoDB connected"))
   .catch((err) => console.error("MongoDB connection error:", err));
-
 
 // Define mongoose schema and model
 const bodySchema = new mongoose.Schema({
@@ -55,7 +53,7 @@ const bodySchema = new mongoose.Schema({
   dimension: String,
   sideralOrbit: Number,
   sideralRotation: Number,
-  aroundPlanet: String, // Assuming this is a reference to another body
+  aroundPlanet: String,
   discoveredBy: String,
   discoveryDate: String,
   alternativeName: String,
@@ -70,22 +68,14 @@ const bodySchema = new mongoose.Schema({
 
 const Body = mongoose.model(mongoCollection, bodySchema, mongoCollection);
 
-// CORS options
-const corsOptions = {
-  origin: [
-    "http://localhost:1234",
-    frontendUrl, // Add more origins as needed
-  ],
-  methods: ["GET", "POST"],
-  allowedHeaders: ["Content-Type", "Authorization"],
-};
-
-console.log("Frontend URL:", frontendUrl);
-console.log("CORS Options: ", corsOptions);
-
+console.log("connecting to " + mongoUri);
+mongoose
+  .connect(mongoUri)
+  .then(() => console.log("MongoDB connection successful"))
+  .catch((err) => console.error("MongoDB connection error:", err));
 
 // Use CORS middleware
-app.use(cors(corsOptions));
+app.use(cors());
 
 // Middleware for parsing JSON requests
 app.use(express.json());
