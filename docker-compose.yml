@@ -2,7 +2,7 @@ version: "3.8"
 
 services:
   frontend:
-    image: ghcr.io/caitoor/starbugs_frontend:latest
+    image: ghcr.io/yaterie2/solar_frontend:latest
     deploy:
       replicas: 1
       update_config:
@@ -22,7 +22,7 @@ services:
       - proxy
 
   backend:
-    image: ghcr.io/caitoor/starbugs_api:latest
+    image: ghcr.io/yaterie2/solar_api:latest
     environment:
       - API_PORT=${API_PORT}
       - FRONTEND_URL=https://${FRONTEND_SUBDOMAIN}.${DOMAIN}
