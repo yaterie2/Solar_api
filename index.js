@@ -3,20 +3,12 @@ require("dotenv").config(); // Load environment variables from .env file
 const express = require("express");
 const mongoose = require("mongoose");
 const cors = require("cors");
-
+const axios = require("axios");
 const app = express();
 const port = process.env.API_PORT || 3001;
 const mongoCollection = process.env.MONGO_COLLECTION;
 const mongoUri = process.env.MONGO_URI;
-
-// Connect to MongoDB
-mongoose
-  .connect(mongoUri, {
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
-  })
-  .then(() => console.log("MongoDB connected"))
-  .catch((err) => console.error("MongoDB connection error:", err));
+const frontendUrl = process.env.FRONTEND_URL;
 
 // Define mongoose schema and model
 const bodySchema = new mongoose.Schema({
@@ -66,29 +58,36 @@ const bodySchema = new mongoose.Schema({
   rel: String,
 });
 
-const Body = mongoose.model("Body", bodySchema);
+const Body = mongoose.model("body", bodySchema, mongoCollection);
 
 console.log("connecting to " + mongoUri);
 mongoose
-  .connect(mongoUri)
+  .connect(mongoUri, {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+  })
   .then(() => console.log("MongoDB connection successful"))
   .catch((err) => console.error("MongoDB connection error:", err));
 
-// Use CORS middleware
-app.use(cors());
+const corsOptions = {
+  origin: [frontendUrl, "http://localhost:5174"],
+};
 
-// Middleware for parsing JSON requests
+app.use(cors(corsOptions));
 app.use(express.json());
 
-// Example route
-app.get("/", (req, res) => {
-  res.send("Welcome to the Solar API!");
-});
-
-// Route to fetch all bodies
+// Route to fetch all bodies with optional filters
 app.get("/api/allbodies", async (req, res) => {
+  const { isPlanet, name } = req.query;
   try {
-    const bodies = await Body.find();
+    const query = {};
+    if (isPlanet !== undefined) {
+      query.isPlanet = isPlanet === "true"; // Convert string to boolean
+    }
+    if (name) {
+      query.name = { $regex: name, $options: "i" }; // Case insensitive search by name
+    }
+    const bodies = await Body.find(query);
     res.json({ bodies });
   } catch (error) {
     console.error("Error fetching bodies:", error);
@@ -96,20 +95,8 @@ app.get("/api/allbodies", async (req, res) => {
   }
 });
 
-// Route to fetch a body by id
-app.get("/api/body/:id", async (req, res) => {
-  const { id } = req.params;
-
-  try {
-    const body = await Body.findOne({ id });
-    if (!body) {
-      return res.status(404).json({ message: "Body not found" });
-    }
-    res.json({ body });
-  } catch (error) {
-    console.error("Error fetching body:", error);
-    res.status(500).json({ error: "Error fetching body" });
-  }
+app.get("/", (req, res) => {
+  res.send(`Welcome to the Solar API!`);
 });
 
 // Start server
