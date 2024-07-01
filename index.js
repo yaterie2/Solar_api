@@ -92,7 +92,7 @@ app.use(cors(corsOptions));
 app.use(express.json());
 
 // Endpoint to fetch only planets
-app.get("/api/planets", async (req, res) => {
+app.get("/planets", async (req, res) => {
   try {
     console.log("Fetching planets");
 
@@ -106,7 +106,7 @@ app.get("/api/planets", async (req, res) => {
 });
 
 // Endpoint to fetch the Sun
-app.get("/api/sun", async (req, res) => {
+app.get("/sun", async (req, res) => {
   try {
     console.log("Fetching the Sun");
 
@@ -123,7 +123,7 @@ app.get("/api/sun", async (req, res) => {
   }
 });
 
-app.get("/api/body/:id", async (req, res) => {
+app.get("/body/:id", async (req, res) => {
   const { id } = req.params;
   console.log(`Fetching body with id: ${id}`);
 
