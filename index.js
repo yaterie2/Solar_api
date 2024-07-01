@@ -81,8 +81,8 @@ const Body = mongoose.model("Body", bodySchema, mongoCollection);
 
 const corsOptions = {
   origin: [frontendUrl, "http://localhost:5174"],
-  methods: ["GET", "POST"],
-  allowedHeaders: ["Content-Type", "Authorization"],
+  // methods: ["GET", "POST"],
+  // allowedHeaders: ["Content-Type", "Authorization"],
 };
 
 console.log("Frontend URL:", frontendUrl);
