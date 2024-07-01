@@ -12,10 +12,7 @@ const frontendUrl = process.env.FRONTEND_URL;
 
 console.log("Connecting to " + mongoUri);
 mongoose
-  .connect(mongoUri, {
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
-  })
+  .connect(mongoUri)
   .then(() => console.log("MongoDB connection successful"))
   .catch((err) => console.error("MongoDB connection error:", err));
 
