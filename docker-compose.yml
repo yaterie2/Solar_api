@@ -27,7 +27,7 @@ services:
       - API_PORT=${API_PORT}
       - FRONTEND_URL=https://${FRONTEND_SUBDOMAIN}.${DOMAIN}
       - MONGO_COLLECTION=${MONGO_COLLECTION}
-      - MONGO_URI=mongodb://${MONGO_INITDB_ROOT_USERNAME}:${MONGO_INITDB_ROOT_PASSWORD}@mongodb:27017/${MONGO_DB}?authSource=admin
+      - MONGO_URI=mongodb://${MONGO_INITDB_ROOT_USERNAME}:${MONGO_INITDB_ROOT_PASSWORD}@solar-app_mongodb:27017/${MONGO_DB}?authSource=admin
       - MONGO_DB=${MONGO_DB}
     deploy:
       replicas: 1
