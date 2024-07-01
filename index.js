@@ -10,7 +10,6 @@ const mongoCollection = process.env.MONGO_COLLECTION;
 const mongoUri = process.env.MONGO_URI;
 const frontendUrl = process.env.FRONTEND_URL;
 
-
 console.log("Connecting to " + mongoUri);
 mongoose
   .connect(mongoUri)
