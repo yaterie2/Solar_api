@@ -97,6 +97,12 @@ app.get("/planets", async (req, res) => {
     console.log("Fetching planets");
 
     const planets = await Body.find({ isPlanet: true });
+
+    if (!planets || planets.length === 0) {
+      console.error("No planets found");
+      return res.status(404).json({ message: "No planets found" });
+    }
+
     console.log(`Fetched ${planets.length} planets`);
     res.json({ planets });
   } catch (error) {
