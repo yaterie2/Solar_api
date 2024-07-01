@@ -3,12 +3,27 @@ require("dotenv").config(); // Load environment variables from .env file
 const express = require("express");
 const mongoose = require("mongoose");
 const cors = require("cors");
-const axios = require("axios");
+
 const app = express();
 const port = process.env.API_PORT || 3001;
 const mongoCollection = process.env.MONGO_COLLECTION;
 const mongoUri = process.env.MONGO_URI;
 const frontendUrl = process.env.FRONTEND_URL;
+
+console.log("Connecting to " + mongoUri);
+mongoose
+  .connect(mongoUri, {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+  })
+  .then(() => console.log("MongoDB connection successful"))
+  .catch((err) => console.error("MongoDB connection error:", err));
+
+const db = mongoose.connection;
+db.on("error", console.error.bind(console, "connection error:"));
+db.once("open", () => {
+  console.log("Connected to MongoDB");
+});
 
 // Define mongoose schema and model
 const bodySchema = new mongoose.Schema({
@@ -45,7 +60,10 @@ const bodySchema = new mongoose.Schema({
   dimension: String,
   sideralOrbit: Number,
   sideralRotation: Number,
-  aroundPlanet: String,
+  aroundPlanet: {
+    planet: String,
+    rel: String,
+  },
   discoveredBy: String,
   discoveryDate: String,
   alternativeName: String,
@@ -58,45 +76,74 @@ const bodySchema = new mongoose.Schema({
   rel: String,
 });
 
-const Body = mongoose.model("body", bodySchema, mongoCollection);
-
-console.log("connecting to " + mongoUri);
-mongoose
-  .connect(mongoUri, {
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
-  })
-  .then(() => console.log("MongoDB connection successful"))
-  .catch((err) => console.error("MongoDB connection error:", err));
+// Create a model based on the schema
+const Body = mongoose.model("Body", bodySchema, mongoCollection);
 
 const corsOptions = {
   origin: [frontendUrl, "http://localhost:5174"],
+  methods: ["GET", "POST"],
+  allowedHeaders: ["Content-Type", "Authorization"],
 };
+
+console.log("Frontend URL:", frontendUrl);
+console.log("CORS Options:", corsOptions);
 
 app.use(cors(corsOptions));
 app.use(express.json());
 
-// Route to fetch all bodies with optional filters
-app.get("/api/allbodies", async (req, res) => {
-  const { isPlanet, name } = req.query;
+// Endpoint to fetch only planets
+app.get("/api/planets", async (req, res) => {
   try {
-    const query = {};
-    if (isPlanet !== undefined) {
-      query.isPlanet = isPlanet === "true"; // Convert string to boolean
-    }
-    if (name) {
-      query.name = { $regex: name, $options: "i" }; // Case insensitive search by name
-    }
-    const bodies = await Body.find(query);
-    res.json({ bodies });
+    console.log("Fetching planets");
+
+    const planets = await Body.find({ isPlanet: true });
+    console.log(`Fetched ${planets.length} planets`);
+    res.json({ planets });
   } catch (error) {
-    console.error("Error fetching bodies:", error);
-    res.status(500).json({ error: "Error fetching bodies" });
+    console.error("Error fetching planets:", error);
+    res.status(500).json({ error: "Error fetching planets" });
+  }
+});
+
+// Endpoint to fetch the Sun
+app.get("/api/sun", async (req, res) => {
+  try {
+    console.log("Fetching the Sun");
+
+    const sun = await Body.findOne({ bodyType: "Star", englishName: "Sun" });
+    if (!sun) {
+      console.error("Sun not found");
+      return res.status(404).json({ message: "Sun not found" });
+    }
+    console.log("Fetched the Sun");
+    res.json({ sun });
+  } catch (error) {
+    console.error("Error fetching the Sun:", error);
+    res.status(500).json({ error: "Error fetching the Sun" });
+  }
+});
+
+app.get("/api/body/:id", async (req, res) => {
+  const { id } = req.params;
+  console.log(`Fetching body with id: ${id}`);
+
+  try {
+    const body = await Body.findOne({ id });
+    if (!body) {
+      console.error(`Body with id: ${id} not found`);
+      return res.status(404).json({ message: "Body not found" });
+    }
+    console.log(`Fetched body with id: ${id}`);
+    res.json({ body });
+  } catch (error) {
+    console.error("Error fetching body:", error);
+    res.status(500).json({ error: "Error fetching body" });
   }
 });
 
 app.get("/", (req, res) => {
-  res.send(`Welcome to the Solar API!`);
+  res.send("Welcome to the Solar API!");
+  console.log("Accessed root endpoint");
 });
 
 // Start server
