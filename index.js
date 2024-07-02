@@ -111,7 +111,7 @@ app.get("/api/planets", async (req, res) => {
 });
 
 // Endpoint to fetch the Sun
-app.get("/api/sun", async (req, res) => {
+app.get("/sun", async (req, res) => {
   try {
     console.log("Fetching the Sun");
 
@@ -129,7 +129,7 @@ app.get("/api/sun", async (req, res) => {
 });
 
 // Endpoint to fetch the Sun
-app.get("/api/pluto", async (req, res) => {
+app.get("/pluto", async (req, res) => {
   try {
     console.log("Fetching Pluto");
 
