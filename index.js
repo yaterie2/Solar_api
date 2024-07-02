@@ -97,7 +97,7 @@ app.use(cors());
 app.use(express.json());
 
 // Endpoint to fetch only planets
-app.get("/api/planets", async (req, res) => {
+app.get("/planets", async (req, res) => {
   try {
     console.log("Fetching planets");
 
