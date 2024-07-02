@@ -146,6 +146,48 @@ app.get("/api/pluto", async (req, res) => {
   }
 });
 
+// Endpoint to fetch Asteroids
+app.get("/api/asteroids", async (req, res) => {
+  try {
+    console.log("Fetching asteroids");
+
+    const asteroids = await Body.find({ bodyType: "Asteroid" });
+
+    res.json({ asteroids });
+  } catch (error) {
+    console.error("Error fetching asteroids:", error);
+    res.status(500).json({ error: "Failed to fetch asteroids" });
+  }
+});
+
+// Endpoint to fetch Comets
+app.get("/api/comets", async (req, res) => {
+  try {
+    console.log("Fetching comets");
+
+    const comets = await Body.find({ bodyType: "Comet" });
+
+    res.json({ comets });
+  } catch (error) {
+    console.error("Error fetching comets:", error);
+    res.status(500).json({ error: "Failed to fetch comets" });
+  }
+});
+
+// Endpoint to fetch Dwarf Planets
+app.get("/api/dwarf-planets", async (req, res) => {
+  try {
+    console.log("Fetching dwarf planets");
+
+    const dwarfPlanets = await Body.find({ bodyType: "Dwarf Planet" });
+
+    res.json({ dwarfPlanets });
+  } catch (error) {
+    console.error("Error fetching dwarf planets:", error);
+    res.status(500).json({ error: "Failed to fetch dwarf planets" });
+  }
+});
+
 app.get("/", (req, res) => {
   res.send("Welcome to the Solar API!");
   console.log("Accessed root endpoint");
