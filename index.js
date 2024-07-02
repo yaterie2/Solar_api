@@ -10,6 +10,8 @@ const mongoCollection = process.env.MONGO_COLLECTION;
 const mongoUri = process.env.MONGO_URI;
 const frontendUrl = process.env.FRONTEND_URL;
 
+const mongoose = require("mongoose");
+
 const connectToMongoDB = async () => {
   try {
     console.log(`Connecting to ${process.env.MONGO_URI}`);
@@ -97,7 +99,7 @@ app.use(cors());
 app.use(express.json());
 
 // Endpoint to fetch only planets
-app.get("/planets", async (req, res) => {
+app.get("/api/planets", async (req, res) => {
   try {
     console.log("Fetching planets");
 
@@ -111,7 +113,7 @@ app.get("/planets", async (req, res) => {
 });
 
 // Endpoint to fetch the Sun
-app.get("/sun", async (req, res) => {
+app.get("/api/sun", async (req, res) => {
   try {
     console.log("Fetching the Sun");
 
@@ -129,7 +131,7 @@ app.get("/sun", async (req, res) => {
 });
 
 // Endpoint to fetch the Sun
-app.get("/pluto", async (req, res) => {
+app.get("/api/pluto", async (req, res) => {
   try {
     console.log("Fetching Pluto");
 
