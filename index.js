@@ -10,17 +10,25 @@ const mongoCollection = process.env.MONGO_COLLECTION;
 const mongoUri = process.env.MONGO_URI;
 const frontendUrl = process.env.FRONTEND_URL;
 
-console.log("Connecting to " + mongoUri);
-mongoose
-  .connect(mongoUri)
-  .then(() => console.log("MongoDB connection successful"))
-  .catch((err) => console.error("MongoDB connection error:", err));
+const connectToMongoDB = async () => {
+  try {
+    console.log(`Connecting to ${process.env.MONGO_URI}`);
+    await mongoose.connect(process.env.MONGO_URI);
+    console.log("MongoDB connection successful");
+  } catch (err) {
+    console.error("MongoDB connection error:", err);
+  }
+};
 
-const db = mongoose.connection;
-db.on("error", console.error.bind(console, "connection error:"));
-db.once("open", () => {
+mongoose.connection.on("error", (err) => {
+  console.error("Connection error:", err);
+});
+
+mongoose.connection.once("open", () => {
   console.log("Connected to MongoDB");
 });
+
+connectToMongoDB();
 
 // Define mongoose schema and model
 const bodySchema = new mongoose.Schema({
@@ -85,21 +93,15 @@ const corsOptions = {
 console.log("Frontend URL:", frontendUrl);
 console.log("CORS Options:", corsOptions);
 
-app.use(cors(corsOptions));
+app.use(cors());
 app.use(express.json());
 
 // Endpoint to fetch only planets
-app.get("/planets", async (req, res) => {
+app.get("/api/planets", async (req, res) => {
   try {
     console.log("Fetching planets");
 
     const planets = await Body.find({ isPlanet: true });
-
-    if (!planets || planets.length === 0) {
-      console.error("No planets found");
-      return res.status(404).json({ message: "No planets found" });
-    }
-
     console.log(`Fetched ${planets.length} planets`);
     res.json({ planets });
   } catch (error) {
@@ -109,7 +111,7 @@ app.get("/planets", async (req, res) => {
 });
 
 // Endpoint to fetch the Sun
-app.get("/sun", async (req, res) => {
+app.get("/api/sun", async (req, res) => {
   try {
     console.log("Fetching the Sun");
 
@@ -126,21 +128,21 @@ app.get("/sun", async (req, res) => {
   }
 });
 
-app.get("/body/:id", async (req, res) => {
-  const { id } = req.params;
-  console.log(`Fetching body with id: ${id}`);
-
+// Endpoint to fetch the Sun
+app.get("/api/pluto", async (req, res) => {
   try {
-    const body = await Body.findOne({ id });
-    if (!body) {
-      console.error(`Body with id: ${id} not found`);
-      return res.status(404).json({ message: "Body not found" });
+    console.log("Fetching Pluto");
+
+    const pluto = await Body.findOne({ bodyType: "Dwarf Planet", englishName: "Pluto" });
+    if (!pluto) {
+      console.error("Pluto not found");
+      return res.status(404).json({ message: "Pluto not found" });
     }
-    console.log(`Fetched body with id: ${id}`);
-    res.json({ body });
+    console.log("Fetched Pluto");
+    res.json({ pluto });
   } catch (error) {
-    console.error("Error fetching body:", error);
-    res.status(500).json({ error: "Error fetching body" });
+    console.error("Error fetching Pluto:", error);
+    res.status(500).json({ error: "Error fetching Pluto" });
   }
 });
 
