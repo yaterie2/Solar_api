@@ -10,8 +10,6 @@ const mongoCollection = process.env.MONGO_COLLECTION;
 const mongoUri = process.env.MONGO_URI;
 const frontendUrl = process.env.FRONTEND_URL;
 
-const mongoose = require("mongoose");
-
 const connectToMongoDB = async () => {
   try {
     console.log(`Connecting to ${process.env.MONGO_URI}`);
